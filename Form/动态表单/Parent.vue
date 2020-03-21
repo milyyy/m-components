@@ -52,15 +52,13 @@ export default {
   },
   methods: {
     del({ row, $index }) {
-      console.log(row, $index);
-      this.$notify({
-        title: "Success",
-        message: "删除成功",
-        type: "success",
-        duration: 2000
-      });
+      // console.log(row, $index);
       // 可以依据后台逻辑删除
       this.tableData.splice($index, 1);
+      this.$message({
+        message: '删除成功',
+        type: 'success'
+      });
     }
   }
 };
