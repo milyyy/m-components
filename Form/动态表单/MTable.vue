@@ -1,13 +1,13 @@
 <!--
  * @Date: 2020-03-20 09:42:43
- * @Description: 固定表头
+ * @Description: 子组件
  * @LastEditTime: 2020-03-20 17:58:04
  * @FilePath: \_vue\src\views\Table\MTable.vue
  -->
 
 <template>
   <div class="table">
-    <el-table :key="key" :data="values" border fit stripe style="width: 100%">
+    <el-table :data="values" border fit stripe style="width: 100%">
       <el-table-column v-for="k in formThead" :key="k" :label="k">
         <template slot-scope="scope">{{ scope.row[k] }}</template>
       </el-table-column>
@@ -32,11 +32,6 @@ export default {
       default: []
     },
     isDisplayAction: Boolean
-  },
-  data() {
-    return {
-      key: 1, // table key
-    };
   },
   computed: {
     formThead(){

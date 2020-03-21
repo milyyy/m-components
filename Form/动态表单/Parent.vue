@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import MTable from "./Table/MTable";
+import MTable from "./MTable";
 export default {
   components: {
     MTable
@@ -38,13 +38,13 @@ export default {
         {
           id: "03",
           name: "mily",
-          age: "18",
+          age: "永远18",
           weight: "50kg"
         },
         {
           id: "07",
           name: "korol",
-          age: "81",
+          age: "我不管了",
           weight: "74kg"
         }
       ]
