@@ -33,7 +33,12 @@ export default {
        * 支持el-table原有属性和方法
        */
       isDisplayAction: true,
-      heads: ["id", "name", "age"],
+      heads: [
+          { title: 'id', key: 'id', width: 180 },
+          { title: '姓名', key: 'name', width: 180, fixed: 'left' }, // 动态设定宽度，是否固定列
+          { title: '年龄', key: 'age', width: 180 },
+          { title: '性别', key: 'sex', width: 180 }
+      ],
       tableData: [
         {
           id: "03",
