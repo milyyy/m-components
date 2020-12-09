@@ -7,10 +7,14 @@
  -->
 <template>
   <div>
-    <m-table :heads="heads" :tableData="tableData" :isDisplayAction="isDisplayAction">
-      <template v-slot:default="slotData">
-        <el-button @click="del(slotData.rowInfo)" size="small">删除</el-button>
-      </template>
+    <m-table :heads="heads"
+             :table-data="tableData"
+             :page-nation="pageNation"
+             :is-display-action="isDisplayAction"
+             @changePage="changePage">
+            <template v-slot:default="slotData">
+              <el-button @click="del(slotData.rowInfo)" size="small">删除</el-button>
+            </template>
     </m-table>
   </div>
 </template>
@@ -36,7 +40,7 @@ export default {
       heads: [
           { title: 'id', key: 'id', width: 180 },
           { title: '姓名', key: 'name', width: 180, fixed: 'left' }, // 动态设定宽度，是否固定列
-          { title: '年龄', key: 'age', width: 180 },
+          { title: '年龄', key: 'age', width: 180, isShowTooltip: true  },
           { title: '性别', key: 'sex', width: 180 }
       ],
       tableData: [
@@ -45,14 +49,13 @@ export default {
           name: "mily",
           age: "永远18",
           weight: "50kg"
-        },
-        {
-          id: "07",
-          name: "korol",
-          age: "我不管了",
-          weight: "74kg"
         }
-      ]
+      ],
+       pageNation: {
+           page: 1,
+           size: 10,
+           total: 0
+       }
     };
   },
   methods: {
@@ -64,7 +67,12 @@ export default {
         message: '删除成功',
         type: 'success'
       });
-    }
+    },
+     // 翻页
+     changePage(val) {
+         this.pageNation.page = val;
+         this.search();
+     },
   }
 };
 </script>
