@@ -13,6 +13,7 @@
             stripe
             :row-style="tableRowClassName"
             style="width: 100%">
+            
             <el-table-column
                 v-for="item in formThead"
                 :key="item.key"
@@ -22,9 +23,13 @@
                 :show-overflow-tooltip="item.isShowTooltip"
                 :align="isAlign">
                 <template slot-scope="scope">
-                    {{ scope.row[item.key] }}
+                    <span v-if="item.formatter">
+                        {{ item.formatter(scope.row[item.key]) }}
+                    </span>
+                    <span v-else>{{ scope.row[item.key] }}</span>
                 </template>
             </el-table-column>
+            
             <el-table-column
                 v-if="isDisplayAction"
                 :align="isAlign"
