@@ -16,3 +16,7 @@ gridData: 列表数据
 // 是否需要模糊搜索
 isNeedBlur: 是否需要模糊搜索
 ```
+
+#### 使用方式：
+可以参考`example.vue`, 提示： 很多data属性和方法都写在`searchInput.js`里，方便管理和使用。
+有啥问题可以提issue留言噢~ 谢谢😀
