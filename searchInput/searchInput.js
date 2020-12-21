@@ -5,13 +5,13 @@
 export const PROVINCE = {
     data() {
         return {
-			params: '', // 这里视情况而定,如果时对象,查询时可以改变对象的某个参数
             provLoading: false,
             provPageInfo: {
                 page: 1,
                 size: 5,
                 total: 0
             },
+            keyWord: '',
             PROVINCE_LIST: []
         };
     },
@@ -20,8 +20,13 @@ export const PROVINCE = {
     },
     methods: {
 		clearProvInfo() {
-			this.form.parentCode = '';
-			this.form.provinceName = '';
+            // 1.关键词、页数置空
+            this.keyWord = '';
+            this.provPageInfo.page = 1;
+            // 2. 表单赋值的属性置空
+            this.form.parentCode = '';
+            this.form.provinceName = '';
+            this.searchList();
 		},
 		rowClickProv(row) {
 			this.form.parentCode = row.districtCode;
@@ -34,7 +39,7 @@ export const PROVINCE = {
 		},
 		// 模糊搜索
 		blurSearch(v) {
-			this.params = v; // 视情况而定,如果是对象,则改变对象值即可
+			this.keyWord = v; // 视情况而定,如果是对象,则改变对象值即可
 			this.searchList();
 		},
 		// 默认查询
@@ -42,7 +47,7 @@ export const PROVINCE = {
             try {
                 this.provLoading = true;
                 const res = await this.$api.queryProvince({
-                    data: this.params,
+                    data: this.keyWord,
                     pageIndex: this.provPageInfo.page,
                     pageSize: this.provPageInfo.size
                 });

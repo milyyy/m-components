@@ -4,8 +4,10 @@
             v-model="visible"
             placement="bottom-start"
             :width="popoverWidth"
-            trigger="focus">
-            <el-table :data="gridData" :show-header="showHeader" @row-click="rowClick" :loading="provLoading">
+            trigger="focus"
+            @show="showAction"
+            @hide="hideAction">
+            <el-table :data="gridData" :show-header="showHeader" @row-click="rowClick">
                 <el-table-column v-for="(item, i) in titles" :key="i" :property="item.key" :label="item.label">
                     <template slot-scope="scope">
                         <span v-if="item.formatter">
@@ -27,7 +29,7 @@
             <!-- 当设置isNeedBlur的值位false时，input为只读状态 -->
             <el-input
                 slot="reference"
-                v-model="value"
+                v-model.trim="value"
                 :readonly="!isNeedBlur"
                 :placeholder="isNeedBlur?'请输入内容':'请选择'"
                 suffix-icon="el-icon-arrow-down"
@@ -112,12 +114,18 @@ export default {
         focus() {
             this.visible = true;
         },
+        // 显示时触发
+        showAction() {
+            this.$emit('changePopoverPage', 1, this.value);
+        },
+        // 隐藏时出发
+        hideAction() {},
         input(v) {
             // 只读状态禁止模糊查询, 反之；
             if (!this.isNeedBlur) { return; }
             clearTimeout(this.timer);
             this.timer = setTimeout(() => {
-                this.$emit('blurSearch', v.trim());
+                this.$emit('blurSearch', v);
             }, 300);
         },
         clear() {
