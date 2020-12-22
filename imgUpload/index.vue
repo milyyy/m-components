@@ -81,11 +81,11 @@ export default {
         },
 
         handleChange(file, fileList) {
-			/*
-				文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
-				注意,这里如果是上传错误的文件类型,还是会被执行,即 fileList 依然会被赋值
-				所以,这里做了一个被禁止类型文件的删除操作
-			 */
+	   /*
+	      文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
+	      注意,这里如果是上传错误的文件类型,还是会被执行,即 fileList 依然会被赋值
+	      所以,这里做了一个被禁止类型文件的删除操作
+	   */
             const isJPG = /^(image\/)(png|jpeg)$/.test(file.type);
             const isLt2M = file.size / 1024 / 1024 < this.maxM;
 
@@ -107,15 +107,15 @@ export default {
 		// 上传失败钩子
         handleFailed(err, file, fileList) {
             console.log('failed', err, file, fileList);
-		},
+	},
 
-		async handleExceed(files, fileList) {
-			/**
-			 * 文件超出个数限制时的钩子
-			 * 至于这里为什么要做这个操作, (强颜欢笑看需求)
-			 * 后台的逻辑是第一次调上传接口, 成功返回一个ossName,然后想修改的时候调替换接口
-			 * 如果后台逻辑是只调一个上传接口就可以替换,这里就不需要操作 ,直接return一个提示信息即可.
-			 */
+	async handleExceed(files, fileList) {
+	 /**
+	  * 文件超出个数限制时的钩子
+	  * 至于这里为什么要做这个操作, (强颜欢笑看需求)
+	  * 后台的逻辑是第一次调上传接口, 成功返回一个ossName,然后想修改的时候调替换接口
+	  * 如果后台逻辑是只调一个上传接口就可以替换,这里就不需要操作 ,直接return一个提示信息即可.
+	 */
             try {
                 const formData = new FormData();
                 formData.append('file', files[0]); // 最新上传的超出限制的文件
