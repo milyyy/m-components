@@ -1,3 +1,4 @@
+/* eslint-disable no-tabs */
 <template>
     <div>
         <el-upload
@@ -90,18 +91,25 @@ export default {
         // 超出限制时的钩子函数, 使最新上传的文件替换上一个旧文件
         async handleExceed(files, fileList) {
             try {
-                const formData = new FormData();
-                formData.append('file', files[0]); // 最新上传的超出限制的文件
-                formData.append('ossFileName', this.lastOssFileName); // 上次上传的文件的ossName
+                const isPDF = /^application\/pdf$/.test(files[0].type);
+                const isLt2M = files[0].size / 1024 / 1024 < this.maxM;
+                if (isPDF && isLt2M) {
+                    const formData = new FormData();
+                    formData.append('file', files[0]); // 最新上传的超出限制的文件
+                    formData.append('ossFileName', this.lastOssFileName); // 上次上传的文件的ossName
 
-                const res = await this.$api.replaceFile(formData);
-                if (res.status !== 2000) {
-                    return this.$message({
-                        message: '文件上传失败, 请重试',
-                        type: 'warning'
-                    });
-                } else {
-                    this.$emit('onOssName', res.data);
+                    const res = await this.$api.replaceFile(formData);
+                    if (res.status === 2000) {
+                        this.$emit('onOssName', res.data);
+                        // 填充替换拷贝, 修复文件更换filelist文件名不更新问题
+                        const value = JSON.parse(JSON.stringify(fileList[0]));
+                        fileList.fill(value, -this.limit + 1);
+                        fileList[this.limit - 1].name = files[0].name;
+                        fileList[this.limit - 1].size = files[0].size;
+                        fileList[this.limit - 1].uid = files[0].lastModified;
+                        fileList[this.limit - 1].raw = files[0];
+                        this.fileList = fileList;
+                    }
                 }
             } catch (e) {}
             // return this.$message.warning(`最多可上传${this.limit}个文件`);
@@ -117,19 +125,18 @@ export default {
         // 覆盖默认的上传行为，可以自定义上传的实现
         async handleRequest(data) {
             try {
-                const formData = new FormData();
-                formData.append('file', data.file);
-                console.log('data.file', data.file);
-                const res = await this.$api.uploadPdf(formData);
-                if (res.status !== 2000) {
-                    return this.$message({
-                        message: '文件上传失败, 请重试',
-                        type: 'warning'
-                    });
-                } else {
-                    this.lastOssFileName = res.data;
-                    this.$emit('onOssName', res.data);
+                const isPDF = /^application\/pdf$/.test(data.file.type);
+                const isLt2M = data.file.size / 1024 / 1024 < this.maxM;
+                if (isPDF && isLt2M) {
+                    const formData = new FormData();
+                    formData.append('file', data.file);
+                    const res = await this.$api.uploadPdf(formData);
+                    if (res.status === 2000) {
+                        this.lastOssFileName = res.data;
+                        this.$emit('onOssName', res.data);
+                    }
                 }
+            // eslint-disable-next-line no-unreachable
             } catch (e) {}
         }
     }

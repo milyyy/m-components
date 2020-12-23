@@ -61,7 +61,6 @@ export default {
     methods: {
         // 预览
         handlePreview(file) {
-            console.log('preview', file);
             this.imgURL = file.url;
             this.uploadVisible = true;
         },
@@ -77,16 +76,13 @@ export default {
             if (!isLt2M) {
                 return this.$message.error(`上传图片大小不能超过 ${this.maxM}MB!`);
             }
-            // return isJPG && isLt2M;
+            return isJPG && isLt2M;
         },
 
+        // 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
         handleChange(file, fileList) {
-	   /*
-	      文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
-	      注意,这里如果是上传错误的文件类型,还是会被执行,即 fileList 依然会被赋值
-	      所以,这里做了一个被禁止类型文件的删除操作
-	   */
-            const isJPG = /^(image\/)(png|jpeg)$/.test(file.type);
+            // 图片未上传完成状态不是success,只能去raw的type
+            const isJPG = /^image\/(png|jpeg)$/.test(file.raw.type);
             const isLt2M = file.size / 1024 / 1024 < this.maxM;
 
             if (isJPG && isLt2M) {
@@ -104,51 +100,51 @@ export default {
             this.fileList = fileList;
             this.$emit('onFileList', this.fileList);
         },
-		// 上传失败钩子
-        handleFailed(err, file, fileList) {
-            console.log('failed', err, file, fileList);
-	},
 
-	async handleExceed(files, fileList) {
-	 /**
-	  * 文件超出个数限制时的钩子
-	  * 至于这里为什么要做这个操作, (强颜欢笑看需求)
-	  * 后台的逻辑是第一次调上传接口, 成功返回一个ossName,然后想修改的时候调替换接口
-	  * 如果后台逻辑是只调一个上传接口就可以替换,这里就不需要操作 ,直接return一个提示信息即可.
-	 */
+        // 文件超出个数限制时的钩子
+        async handleExceed(files, fileList) {
             try {
-                const formData = new FormData();
-                formData.append('file', files[0]); // 最新上传的超出限制的文件
-                formData.append('ossFileName', this.lastOssFileName); // 上次上传的文件的ossName
+                const isJPG = /^(image\/)(png|jpeg)$/.test(files[0].type);
+                const isLt2M = files[0].size / 1024 / 1024 < this.maxM;
+                if (isJPG && isLt2M) {
+                    const formData = new FormData();
+                    formData.append('file', files[0]); // 最新上传的超出限制的文件
+                    formData.append('ossFileName', this.lastOssFileName); // 上次上传的文件的ossName
 
-                const res = await this.$api.replaceFile(formData);
-                if (res.status !== 2000) {
-                    return this.$message({
-                        message: '文件上传失败, 请重试',
-                        type: 'warning'
-                    });
-                } else {
-                    this.$emit('onOssName', res.data);
+                    const res = await this.$api.replaceFile(formData);
+                    if (res.status === 2000) {
+                        this.$emit('onOssName', res.data);
+                        // 填充替换拷贝, 修复文件更换filelist文件名不更新问题
+                        const value = JSON.parse(JSON.stringify(fileList[0]));
+                        fileList.fill(value, -this.limit + 1);
+                        fileList[this.limit - 1].name = files[0].name;
+                        fileList[this.limit - 1].size = files[0].size;
+                        fileList[this.limit - 1].uid = files[0].lastModified;
+                        fileList[this.limit - 1].raw = files[0];
+                        this.fileList = fileList;
+                    }
                 }
             } catch (e) {}
             // return this.$message.warning(`最多可上传${this.limit}个文件`);
-		},
+        },
 
+        failed(err, file, fileList) {
+            console.log('failed', err, file, fileList);
+        },
         // 覆盖默认的上传行为，可以自定义上传的实现
         async handleRequest(data) {
             try {
-                const formData = new FormData();
-                formData.append('file', data.file);
-                const res = await this.$api.uploadPic(formData);
-                console.log('logo', res);
-                if (res.status !== 2000) {
-                    return this.$message({
-                        message: '图片上传失败, 请重试',
-                        type: 'warning'
-                    });
-                } else {
-                    this.lastOssFileName = res.data;
-                    this.$emit('onOssName', res.data);
+                const isJPG = /^image\/(png|jpeg)$/.test(data.file.type);
+                const isLt2M = data.file.size / 1024 / 1024 < this.maxM;
+                console.log('isJPG', isJPG, isLt2M);
+                if (isJPG && isLt2M) {
+                    const formData = new FormData();
+                    formData.append('file', data.file);
+                    const res = await this.$api.uploadPic(formData);
+                    if (res.status === 2000) {
+                        this.lastOssFileName = res.data;
+                        this.$emit('onOssName', res.data);
+                    }
                 }
             } catch (e) {}
         }
