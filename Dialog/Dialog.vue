@@ -98,6 +98,7 @@ export default {
 <style lang="scss" scoped>
 /deep/ .ym-dialog {
     color: 343434;
+    overflow: hidden;
     .el-dialog__header {
         padding: 10px 20px;
         text-align: left;
