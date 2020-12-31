@@ -5,7 +5,10 @@
             :title="title"
             :custom-class="myClass"
             :visible.sync="dialogVisible"
+            :close-on-click-modal="false"
             :width="width"
+            :modal="hasModal"
+            :modal-append-to-body="isBody"
             :before-close="cancel">
             <slot />
             <span
@@ -56,10 +59,21 @@ export default {
             type: Boolean,
             default: true
         },
+        isBody: { // 遮罩层是否在body上
+            type: Boolean,
+            default: true
+        },
+        hasModal: { // 是否需要遮罩层
+            type: Boolean,
+            default: true
+        },
         myClass: {
             type: String,
             default: 'ym-dialog'
         }
+    },
+    data() {
+        return {};
     },
     methods: {
         cancel() {
@@ -88,7 +102,7 @@ export default {
         padding: 10px 20px;
         text-align: left;
         // background-color: #409eff;
-        background-color: #ffaf00;
+        background-color: #5faeff;
     }
     .el-dialog__footer {
         padding: 10px 20px;
