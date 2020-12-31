@@ -15,7 +15,7 @@
 ```html
 <!-- 父组件 -->
 <template>
-	<ymDialog :dialog-visible="dialogVisible" :is-show-btns="false" center :width="'40%'" :done="test" @visible="visible" />
+	<ymDialog :dialog-visible="dialogVisible" :is-show-btns="false" center :width="'40%'" :done="test" @visible="visible" :is-body="false" />
 </template>
 
 <script>
