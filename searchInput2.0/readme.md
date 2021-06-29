@@ -87,7 +87,8 @@ export default {
 #### 2.查`v-model`绑定的id或者其他key的值 （多参数查询）
 ```html
 <!-- index.vue -->
-<template v-if="scope.row.action.isNeedElement == 1" slot-scope="scope">
+<template slot-scope="scope">
+	<!-- 重点只关注这部分即可 -->
  	<pageComp v-model="scope.row.page.pageName" :system-id="scope.row.systemId" @onPage="row => onPage(row, scope.$index)" />
 </template>
 ```
